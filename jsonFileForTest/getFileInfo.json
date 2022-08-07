@@ -1,0 +1,10 @@
+[
+	{
+		"FileInfoId": "1",
+		"FileName": "test.txt",
+		"FileContent": "test",
+		"MimeType": "text/plain",
+		"UserId": "001",
+		"PostedDate": "2022/8/7"
+	}
+]
