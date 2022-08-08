@@ -63,6 +63,9 @@ func PostFIleData(fileName string,fileContent string,mimeType string,userId stri
 }
 
 func GetFileDataByUserId(userId string,date string) (bool,[]byte){
+	if userId == "" || date == ""{
+		return false,nil
+	}
 	
 	infoJsonList := []UploadedFileInfoJson{}
 	statement := getFileDataByUserIdSQL()

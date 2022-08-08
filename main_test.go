@@ -9,19 +9,12 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"uploadFilePJ/data"
 	"uploadFilePJ/utils"
 
 	"github.com/stretchr/testify/assert"
 )
 
-type UploadedFileInfoJson struct{
-	FileInfoId string `json:"fileInfoId"`
-	FileName string `json:"fileName"`
-	FileContent string `json:"fileContent"`
-	MimeType string `json:"mimeType"`
-	UserId string `json:"userId"`
-	PostedDate string `json:"postedDate"`
-}
 func TestIndexHandler(t *testing.T) {
     // テスト用ハンドラ作成
     mux := http.NewServeMux()
@@ -131,14 +124,14 @@ func TestGetFileInfoByUserId1(t *testing.T) {
     mux := http.NewServeMux()
     mux.HandleFunc("/api/v1/getFileInfoByUserId", getFileInfoByUserId)
     values := url.Values{}
-    values.Set("userId", "001")
-    values.Add("date", "2022/8/7")
+    values.Set("userId", "002")
+    values.Add("date", "2022/8/8")
     req := httptest.NewRequest("POST","/api/v1/getFileInfoByUserId",strings.NewReader(values.Encode()),)
     res := httptest.NewRecorder()
     req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
     mux.ServeHTTP(res,req)
     // 実行結果をJSONで取得
-    var infoJsonList []UploadedFileInfoJson
+    var infoJsonList []data.UploadedFileInfoJson
     json.Unmarshal(res.Body.Bytes(),&infoJsonList)
     // 期待結果を作成したJSONファイルから取得
     jsonFile,err := os.Open("./jsonFileForTest/getFileInfo.json")
@@ -149,8 +142,86 @@ func TestGetFileInfoByUserId1(t *testing.T) {
 	if err != nil{
 		panic(err)
 	}
-	var infoJsonListExpected []UploadedFileInfoJson
+	var infoJsonListExpected []data.UploadedFileInfoJson
     json.Unmarshal(jsonData,&infoJsonListExpected)
 
     assert.Equal(t,infoJsonListExpected,infoJsonList)
+}
+func TestGetFileInfoByUserId2(t *testing.T) {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/api/v1/getFileInfoByUserId", getFileInfoByUserId)
+    values := url.Values{}
+    values.Set("userId", "002")
+    req := httptest.NewRequest("POST","/api/v1/getFileInfoByUserId",strings.NewReader(values.Encode()),)
+    res := httptest.NewRecorder()
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    mux.ServeHTTP(res,req)
+    assert.Equal(t,http.StatusNotFound, res.Code)
+}
+func TestGetFileInfoByUserId3(t *testing.T) {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/api/v1/getFileInfoByUserId", getFileInfoByUserId)
+    values := url.Values{}
+    values.Set("date", "2022/8/8")
+    req := httptest.NewRequest("POST","/api/v1/getFileInfoByUserId",strings.NewReader(values.Encode()),)
+    res := httptest.NewRecorder()
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    mux.ServeHTTP(res,req)
+    assert.Equal(t,http.StatusNotFound, res.Code)}
+
+func TestGetFileInfoByUserId4(t *testing.T) {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/api/v1/getFileInfoByUserId", getFileInfoByUserId)
+    values := url.Values{}
+    values.Set("userId", "002")
+    values.Add("date", "2022/8/10")
+    req := httptest.NewRequest("POST","/api/v1/getFileInfoByUserId",strings.NewReader(values.Encode()),)
+    res := httptest.NewRecorder()
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    mux.ServeHTTP(res,req)
+    var infoJsonList []data.UploadedFileInfoJson
+    json.Unmarshal(res.Body.Bytes(),&infoJsonList)
+    // 期待結果を作成したJSONファイルから取得
+    jsonFile,err := os.Open("./jsonFileForTest/getFileInfo2.json")
+    if err != nil{
+		panic(err)
+	}
+	jsonData ,err := ioutil.ReadAll(jsonFile)
+	if err != nil{
+		panic(err)
+	}
+	var infoJsonListExpected []data.UploadedFileInfoJson
+    json.Unmarshal(jsonData,&infoJsonListExpected)
+
+    assert.Equal(t,infoJsonListExpected,infoJsonList)    
+
+}
+
+func TestGetFileInfoByUserId5(t *testing.T) {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/api/v1/getFileInfoByUserId", getFileInfoByUserId)
+    values := url.Values{}
+    values.Set("userId", "004")
+    values.Add("date", "2022/8/8")
+    req := httptest.NewRequest("POST","/api/v1/getFileInfoByUserId",strings.NewReader(values.Encode()),)
+    res := httptest.NewRecorder()
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    mux.ServeHTTP(res,req)
+    var infoJsonList []data.UploadedFileInfoJson
+    json.Unmarshal(res.Body.Bytes(),&infoJsonList)
+    // 期待結果を作成したJSONファイルから取得
+    jsonFile,err := os.Open("./jsonFileForTest/getFileInfo2.json")
+    if err != nil{
+		panic(err)
+	}
+	jsonData ,err := ioutil.ReadAll(jsonFile)
+	if err != nil{
+		panic(err)
+	}
+	var infoJsonListExpected []data.UploadedFileInfoJson
+    json.Unmarshal(jsonData,&infoJsonListExpected)
+
+    assert.Equal(t,infoJsonListExpected,infoJsonList)
+
+
 }
